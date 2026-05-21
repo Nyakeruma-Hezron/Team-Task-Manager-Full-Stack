@@ -1,91 +1,117 @@
-# TeamFlow - My Full-Stack Task Manager
+TeamFlow - Full-Stack Task Management Platform
+TeamFlow is a comprehensive, full-stack project management application designed to streamline team collaboration, task assignment, and progress tracking through an intuitive Kanban interface.
 
-Hey everyone! 👋 This is **TeamFlow**, a full-stack web application I built as my final placement submission. It's essentially a project management tool (kinda like a simplified Jira or Trello) that lets teams collaborate, assign tasks, and track their progress through a Kanban board.
+Live Environment: https://comrade.name.ng
 
-I wanted to build something that solves a real problem while showing off my skills in frontend design, backend API development, database relationships, and secure authentication. 
+🚀 Features
+Secure Authentication: JWT-based authentication with bcrypt password hashing.
 
-You can check out the live demo here: [https://accomplished-vision-production-cc11.up.railway.app](https://accomplished-vision-production-cc11.up.railway.app/)
+Project Workspaces: Create unlimited projects and seamlessly invite team members via email.
 
+Interactive Kanban Board: Visual task management across "To Do," "In Progress," and "Done" stages.
 
----
+Advanced Task Management: Assign tasks, define priority levels (Low, Medium, High), and establish due dates.
 
-## What can it do?
+Role-Based Access Control (RBAC): Delineated permissions between "Admins" (full control) and "Members" (status updates only).
 
-I tried to pack in as many essential features as possible to make it a genuinely useful tool:
+Centralized Dashboard: A high-level overview of active projects, pending assignments, and overdue tasks.
 
-- **Sign up & Login:** Fully secure authentication using JWTs. Your passwords are encrypted with bcrypt, so nobody (not even me!) can see them.
-- **Project Workspaces:** You can create as many projects as you want and invite your teammates using their email addresses.
-- **Kanban Board:** A clear board (To Do, In Progress, Done) to visually track how tasks are moving along.
-- **Task Assignment:** As an admin, you can assign tasks to specific people, set priority levels (Low, Medium, High), and add due dates.
-- **Role-Based Access (RBAC):** There are "Admins" and "Members". Admins have full control, while Members can only update the status of the tasks they've been specifically assigned to.
-- **Dashboard:** A nice little overview page that shows your active projects, tasks you need to finish, and anything that's overdue.
+🛠️ Technology Stack & Architecture
+This application utilizes a modern, containerized microservices architecture optimized for secure and scalable deployment.
 
----
+Frontend: React.js (Vite) with custom CSS (Glassmorphism design).
 
-## How I built it
+Backend: Node.js, Express.js REST API.
 
-I used my favorite modern web development stack to build this:
+Database: PostgreSQL (managed via Prisma ORM).
 
-- **Frontend:** React.js (via Vite). I didn't use any heavy CSS libraries like Tailwind or Bootstrap because I wanted to write the CSS myself from scratch to achieve a custom "glassmorphism" dark mode look.
-- **Backend:** Node.js with Express for the REST API.
-- **Database:** PostgreSQL (I used SQLite during development for speed, but the production version runs on Postgres).
-- **ORM:** Prisma (it makes working with SQL so much easier and safer).
-- **Deployment:** The whole thing is configured to be deployed on Railway!
+Caching Layer: Redis.
 
----
+Reverse Proxy: Nginx (acts as an API Gateway handling all external routing).
 
-## How to run it locally
+Infrastructure: Fully containerized using Docker & Docker Compose.
 
-If you want to clone this and run it on your own machine, here is how you do it:
+🐳 Quick Start (Docker Setup)
+The entire application is containerized, making local development and deployment incredibly straightforward.
 
-**First, get the backend running:**
-1. Open your terminal and go to the `backend` folder: `cd backend`
-2. Create a `.env` file (you can copy `.env.example`). You'll need to set the database URL and a random string for the `JWT_SECRET`.
-3. Install the packages: `npm install`
-4. Set up the database tables: `npx prisma db push`
-5. Start the server: `npm run dev` (it runs on port 5001)
+Prerequisites
+Docker
 
-**Then, start the frontend:**
-1. Open a new terminal tab and go to the `frontend` folder: `cd frontend`
-2. Create a `.env` file and point it to the backend: `VITE_API_URL=http://localhost:5001/api`
-3. Install the packages: `npm install`
-4. Start the Vite server: `npm run dev`
-5. Open `http://localhost:5173` in your browser!
+Docker Compose
 
----
+Installation & Execution
+Clone the repository:
 
-## API Documentation
+Bash
+git clone https://github.com/Nyakeruma-Hezron/Team-Task-Manager-Full-Stack.git
+cd Team-Task-Manager-Full-Stack
+Configure Environment Variables:
+Navigate to the backend directory and create your .env file:
 
-If you want to test the endpoints via Postman or Curl, here's a quick summary of what I built:
+Bash
+cd backend
+cp .env.example .env
+Ensure your .env contains the essential variables:
 
-**Authentication**
-- `POST /api/auth/signup` - Register a new account
-- `POST /api/auth/login` - Login and get a token
-- `GET /api/auth/me` - Get logged-in user details
+Code snippet
+PORT=3000
+DATABASE_URL="postgresql://taskuser:supersecretpassword@db:5432/taskmanager?schema=public"
+REDIS_URL="redis://redis:6379"
+JWT_SECRET="your_secure_random_string"
+FRONTEND_URL="http://localhost"
+Spin up the containers:
+Return to the root directory and start the stack in detached mode:
 
-**Projects & Members**
-- `GET /api/projects` - Get all your projects
-- `POST /api/projects` - Create a new project
-- `GET /api/projects/:id` - Get project details (tasks, members)
-- `POST /api/projects/:id/members` - Invite someone to your project
+Bash
+cd ..
+docker compose up -d --build
+Run Database Migrations:
+Push the Prisma schema to the newly created PostgreSQL container to build your tables:
 
-**Tasks**
-- `POST /api/projects/:id/tasks` - Create a task
-- `PUT /api/projects/:id/tasks/:taskId` - Update a task (status, assignee, etc.)
-- `DELETE /api/projects/:id/tasks/:taskId` - Delete a task
+Bash
+docker compose exec backend npx prisma db push
+Access the Application:
 
----
+Frontend UI: http://localhost
 
-## Project Structure
+Note: Nginx automatically proxies any requests starting with /api/ directly to the hidden backend container.
 
-If you're exploring the codebase, here's how I organized everything:
-- `backend/src/controllers/` - The business logic for handling API requests
-- `backend/src/routes/` - The Express router definitions
-- `backend/src/middleware/` - Where the magic happens for JWT verification and role checks
-- `backend/prisma/schema.prisma` - The database schema definition
-- `frontend/src/components/` - Reusable UI components like the Kanban board and Modals
-- `frontend/src/pages/` - The main views (Dashboard, Project Detail, etc.)
-- `frontend/src/context/AuthContext.jsx` - Global state for managing the user's login session
+📡 API Reference
+Authentication
+POST /api/auth/signup - Register a new account
 
----
+POST /api/auth/login - Authenticate and retrieve JWT
 
+GET /api/auth/me - Retrieve current user profile
+
+Projects & Members
+GET /api/projects - Retrieve user's projects
+
+POST /api/projects - Initialize a new project
+
+GET /api/projects/:id - Retrieve project details, tasks, and member list
+
+POST /api/projects/:id/members - Invite a user to a project
+
+Tasks
+POST /api/projects/:id/tasks - Create a new task within a project
+
+PUT /api/projects/:id/tasks/:taskId - Update task parameters (status, assignee, priority)
+
+DELETE /api/projects/:id/tasks/:taskId - Remove a task
+
+📂 Project Structure
+Plaintext
+Team-Task-Manager-Full-Stack/
+├── docker-compose.yml       # Master infrastructure configuration
+├── nginx/                   # Nginx reverse proxy configurations
+├── redis/                   # Redis cache configurations
+├── frontend/                # React.js SPA
+│   ├── src/components/      # Reusable UI elements
+│   ├── src/pages/           # Main application views
+│   └── src/context/         # Global state management
+└── backend/                 # Node.js API
+    ├── prisma/              # Database schema and migrations
+    ├── src/controllers/     # Request handlers and business logic
+    ├── src/routes/          # API endpoint definitions
+    └── src/middleware/      # Authentication and RBAC guards
