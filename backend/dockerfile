@@ -1,0 +1,24 @@
+# 1. Use a lightweight Node.js base image
+FROM node:18-alpine
+
+# 2. Set the working directory inside the container
+WORKDIR /app
+
+# 3. Install OpenSSL (Required for Prisma on Alpine Linux)
+RUN apk add --no-cache openssl
+
+# 4. Copy package files AND the Prisma folder first
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# 5. Install dependencies (This will now safely trigger your postinstall script)
+RUN npm install
+
+# 6. Copy the rest of your backend code
+COPY . .
+
+# 7. Expose the port your Express app is listening on
+EXPOSE 3000
+
+# 8. Start the application
+CMD ["node", "src/index.js"]

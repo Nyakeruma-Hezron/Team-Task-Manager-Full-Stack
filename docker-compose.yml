@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db # Wait for the database to start
+
+  # NEW: PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: taskmanager
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data: # Switched from sqlite_data
