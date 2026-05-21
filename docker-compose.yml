@@ -1,23 +1,21 @@
-version: '3.8'
-
 services:
-  # 1. The Front Door (Only container exposed to the internet)
+  # 1. The Master Proxy (The Front Door)
   proxy:
     build: ./nginx
     ports:
-      - "80:80"
+      - "8082:80"
     restart: unless-stopped
     depends_on:
       - frontend
       - backend
 
-  # 2. The Frontend UI (Completely hidden from the internet)
+  # 2. The Frontend UI (Hidden)
   frontend:
     build: ./frontend
     restart: unless-stopped
-    # No ports mapped! The proxy talks to it internally on port 80.
+    # No ports exposed!
 
-  # 3. The Backend API (Completely hidden)
+  # 3. The Backend API (Hidden)
   backend:
     build: ./backend
     restart: unless-stopped
@@ -25,16 +23,29 @@ services:
       - ./backend/.env
     depends_on:
       - redis
-    # No ports mapped! The proxy talks to it internally on port 3000.
+      - db
+    # No ports exposed!
 
-  # 4. The Custom Redis Cache (Completely hidden)
+  # 4. The Redis Cache (Hidden)
   redis:
     build: ./redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    # No ports mapped! Only the backend can talk to it internally.
+    # No ports exposed!
+
+  # 5. The PostgreSQL Database (Hidden)
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: taskmanager
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # No ports exposed!
 
 volumes:
   redis_data:
-  # sqlite_data: (Keep this if you are still using SQLite!)
+  postgres_data:
