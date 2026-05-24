@@ -69,8 +69,9 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
+          script_stop: true
           script: |
-            # Navigate to your project folder (CHANGE THIS TO YOUR ACTUAL PATH)
+            
             cd /home/hezron/Team-Task-Manager-Full-Stack
             
             # Pull the latest docker-compose.yml from GitHub
